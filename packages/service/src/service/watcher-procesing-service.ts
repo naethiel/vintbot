@@ -6,7 +6,6 @@ import { logger } from "../logger.js";
 
 const SECOND = 1000;
 
-
 export function runBatchProcessor(db: DBClient, dryRun: boolean): void {
   const batchSize = Number(process.env.BATCH_SIZE ?? 10);
   const frequency = Number(process.env.BATCH_FREQUENCY) || 5 * SECOND;
@@ -24,12 +23,18 @@ export function runBatchProcessor(db: DBClient, dryRun: boolean): void {
   }, frequency);
 }
 
-async function processBatch(db: DBClient, batchSize: number, dryRun: boolean): Promise<void> {
+async function processBatch(
+  db: DBClient,
+  batchSize: number,
+  dryRun: boolean
+): Promise<void> {
   try {
     const watchers = await db.getWatchers(batchSize);
     logger.debug(`processing ${watchers.length} watchers`);
 
-    await Promise.allSettled(watchers.map((w) => processWatcher(db, w, dryRun)));
+    await Promise.allSettled(
+      watchers.map((w) => processWatcher(db, w, dryRun))
+    );
   } catch (err) {
     logger.error("failed to process watchers", "error", err);
   }

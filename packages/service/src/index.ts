@@ -8,7 +8,7 @@ const isDryRun = process.env.MAIL_DRY_RUN === "true";
 
 async function main() {
   logger.info("starting vinted watcher bot");
-  const db = await DBClient.init()
+  const db = await DBClient.init();
 
   try {
     logger.info("starting batch processor", "dry run", isDryRun);

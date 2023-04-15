@@ -2,8 +2,6 @@ import sqlite3 from "sqlite3";
 import * as sql from "sqlite";
 import { Watcher, CreateWatcherPayload, Product } from "../types.js";
 
-
-
 export class DBClient {
   readonly path: string;
   readonly db: sql.Database;
@@ -114,4 +112,3 @@ export class DBClient {
     ]);
   }
 }
-

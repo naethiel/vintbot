@@ -1,6 +1,5 @@
 import { logger } from "../logger.js";
 
-
 export interface VintedItem {
   id: number;
   title: string;
