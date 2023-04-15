@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "dev": "npm run dev --workspaces --if-present",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "prettier": "^2.8.7"
+  },
+  "name": "vintbot-mono",
+  "packageManager": "npm@8.1.1",
+  "workspaces": [
+    "packages/*"
+  ]
+}

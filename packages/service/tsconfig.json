@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Default",
+
+  "compilerOptions": {
+    "module": "Node16",
+    "esModuleInterop": true,
+    "target": "ES2022",
+    "moduleResolution": "node16",
+    "outDir": "build",
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "isolatedModules": false,
+    "strict": true,
+    "noImplicitAny": true,
+    "useUnknownInCatchVariables": false,
+    "inlineSourceMap": true
+  },
+  "ts-node": {
+    "esm": true
+  },
+  "lib": ["esnext", "node18"]
+}
