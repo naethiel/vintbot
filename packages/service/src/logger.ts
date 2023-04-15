@@ -1,4 +1,4 @@
-import { defaultLogger, getLogLevel } from "logger";
+import { defaultLogger, getLogLevel } from "@vintbot/logger";
 
 defaultLogger.context = { app: "vinted_watcher" };
 defaultLogger.logType =
