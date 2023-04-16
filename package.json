@@ -2,7 +2,8 @@
   "private": true,
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "dev": "npm run dev --workspaces --if-present",
+    "dev:web": "npm run dev -w @vintbot/web",
+    "dev:service": "npm run dev -w @vintbot/service",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
