@@ -10,12 +10,14 @@
     "start": "ts-node -r dotenv/config src/index.ts --swc"
   },
   "dependencies": {
+    "@fastify/cors": "^8.2.1",
     "@fastify/sensible": "^5.2.0",
     "@sendinblue/client": "^3.3.1",
     "dotenv": "^16.0.3",
     "fastify": "^4.15.0",
     "fastify-type-provider-zod": "^1.1.9",
-    "logger": "*",
+    "@vintbot/logger": "*",
+    "@vintbot/types": "*",
     "node-fetch": "^3.3.1",
     "sqlite": "^4.1.2",
     "sqlite3": "^5.1.6",

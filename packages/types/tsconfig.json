@@ -1,0 +1,12 @@
+{
+  "include": ["."],
+  "exclude": ["dist", "build", "node_modules"],
+  "references": [],
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "rootDir": ".",
+    "composite": true,
+    "outDir": "build/"
+  }
+}
