@@ -14,28 +14,28 @@ import {
   CreateWatcherResponse,
   zUpdateWatcherRequest,
   zUpdateWatcherResponse,
-  } from "../types.js";
+} from "../types.js";
 
 import { logger } from "../logger.js";
 import { DBClient } from "../database/database.js";
-import cors, {OriginFunction} from "@fastify/cors";
+import cors, { OriginFunction } from "@fastify/cors";
 import sensible from "@fastify/sensible";
 
 const resolveCors: OriginFunction = (origin, cb) => {
   if (!origin) {
-    cb(new Error("invalid origin"), false)
-    return
+    cb(new Error("invalid origin"), false);
+    return;
   }
 
-  const hostname = new URL(origin).hostname
-  if (hostname === "localhost"){
+  const hostname = new URL(origin).hostname;
+  if (hostname === "localhost") {
     //  Request from localhost will pass
-    cb(null, true)
-    return
+    cb(null, true);
+    return;
   }
   // Generate an error on other origins, disabling access
-  cb(new Error("Not allowed"), false)
-}
+  cb(new Error("Not allowed"), false);
+};
 
 export async function startAPI(db: DBClient): Promise<void> {
   const fastify = Fastify({
