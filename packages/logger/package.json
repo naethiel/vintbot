@@ -7,7 +7,6 @@
     "license": "MIT",
     "scripts": {},
     "devDependencies": {
-        "tsconfig": "*",
         "typescript": "^5.0.4"
     }
 }
