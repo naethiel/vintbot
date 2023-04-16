@@ -1,6 +1,6 @@
 import sqlite3 from "sqlite3";
 import * as sql from "sqlite";
-import { Watcher, CreateWatcherPayload, Product } from "../types.js";
+import { Watcher, CreateWatcherRequest, Product } from "../types.js";
 
 export class DBClient {
   readonly path: string;
@@ -53,7 +53,9 @@ export class DBClient {
     ]);
   }
 
-  async createWatcher(newWatcher: CreateWatcherPayload): Promise<Watcher> {
+  async createWatcher(
+    newWatcher: CreateWatcherRequest["watcher"]
+  ): Promise<Watcher> {
     const now = new Date().toISOString();
 
     const result = await this.db.get<Watcher>(

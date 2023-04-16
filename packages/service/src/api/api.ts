@@ -5,18 +5,51 @@ import {
 } from "fastify-type-provider-zod";
 import Fastify from "fastify";
 import { z } from "zod";
-import { zWatcher, zCreateWatcherPayload, Watcher } from "../types.js";
+import {
+  zCreateWatcherRequest,
+  Watcher,
+  zGetWatchersResponse,
+  GetWatchersResponse,
+  zCreateWatcherResponse,
+  CreateWatcherResponse,
+  zUpdateWatcherRequest,
+  zUpdateWatcherResponse,
+  } from "../types.js";
 
 import { logger } from "../logger.js";
 import { DBClient } from "../database/database.js";
+import cors, {OriginFunction} from "@fastify/cors";
+import sensible from "@fastify/sensible";
+
+const resolveCors: OriginFunction = (origin, cb) => {
+  if (!origin) {
+    cb(new Error("invalid origin"), false)
+    return
+  }
+
+  const hostname = new URL(origin).hostname
+  if (hostname === "localhost"){
+    //  Request from localhost will pass
+    cb(null, true)
+    return
+  }
+  // Generate an error on other origins, disabling access
+  cb(new Error("Not allowed"), false)
+}
 
 export async function startAPI(db: DBClient): Promise<void> {
   const fastify = Fastify({
-    logger: true,
+    logger: {
+      enabled: true,
+    },
   }).withTypeProvider<ZodTypeProvider>();
 
   // add sensible defaults and error shorthand methods
-  fastify.register(import("@fastify/sensible"));
+  fastify.register(sensible);
+  fastify.register(cors, {
+    origin: resolveCors,
+  });
+
   // Add schema validator and serializer
   fastify.setValidatorCompiler(validatorCompiler);
   fastify.setSerializerCompiler(serializerCompiler);
@@ -26,9 +59,7 @@ export async function startAPI(db: DBClient): Promise<void> {
     {
       schema: {
         response: {
-          200: z.object({
-            watchers: z.array(zWatcher),
-          }),
+          200: zGetWatchersResponse,
         },
       },
     },
@@ -36,7 +67,10 @@ export async function startAPI(db: DBClient): Promise<void> {
     async (_req, repl) => {
       const watchers = await db.getAllWatchers();
 
-      repl.send({ watchers });
+      const res: GetWatchersResponse = {
+        data: { watchers: watchers },
+      };
+      repl.send(res);
     }
   );
 
@@ -44,25 +78,21 @@ export async function startAPI(db: DBClient): Promise<void> {
     "/watchers",
     {
       schema: {
-        body: z.object({
-          watcher: zCreateWatcherPayload,
-        }),
+        body: zCreateWatcherRequest,
         response: {
-          200: z.object({
-            watcher: zWatcher,
-          }),
+          200: zCreateWatcherResponse,
         },
       },
     },
     async (request, reply) => {
-      const { watcher } = request.body;
-
-      const newWatcher = await db.createWatcher(watcher);
+      const newWatcher: Watcher = await db.createWatcher(request.body.watcher);
       if (!newWatcher) {
         reply.internalServerError();
       }
 
-      reply.send({ watcher: newWatcher });
+      const out: CreateWatcherResponse = { data: { watcher: newWatcher } };
+
+      reply.send(out);
     }
   );
 
@@ -70,16 +100,12 @@ export async function startAPI(db: DBClient): Promise<void> {
     "/watchers/:id",
     {
       schema: {
-        body: z.object({
-          watcher: zCreateWatcherPayload.partial(),
-        }),
+        body: zUpdateWatcherRequest,
         params: z.object({
           id: z.string(),
         }),
         response: {
-          200: z.object({
-            watcher: zWatcher,
-          }),
+          200: zUpdateWatcherResponse,
         },
       },
     },
@@ -101,7 +127,11 @@ export async function startAPI(db: DBClient): Promise<void> {
       await db.updateWatcher(newWatcher);
 
       // answer with updated watcher
-      reply.send({ watcher: newWatcher });
+      reply.send({
+        data: {
+          watcher: newWatcher,
+        },
+      });
     }
   );
 
