@@ -5,10 +5,12 @@ import { mailService } from "./mail-service.js";
 import { logger } from "../logger.js";
 
 const SECOND = 1000;
+const DEFAULT_BATCH_FREQ = 5 * SECOND;
+const DEFAULT_BATCH_SIZE = 10;
 
 export function runBatchProcessor(db: DBClient, dryRun: boolean): void {
-  const batchSize = Number(process.env.BATCH_SIZE ?? 10);
-  const frequency = Number(process.env.BATCH_FREQUENCY) || 5 * SECOND;
+  const batchSize = Number(process.env.BATCH_SIZE ?? DEFAULT_BATCH_SIZE);
+  const frequency = Number(process.env.BATCH_FREQUENCY ?? DEFAULT_BATCH_FREQ);
 
   let isProcessing = false;
   setInterval(() => {

@@ -10,12 +10,10 @@ export enum logLvl {
 export class Logger {
   verbosity: logLvl;
   context: Context;
-  logType: "raw" | "pretty";
 
-  constructor(ctx: Context, lvl: logLvl, type?: "raw" | "pretty") {
+  constructor(ctx: Context, lvl: logLvl) {
     this.context = ctx;
     this.verbosity = lvl;
-    this.logType = type || "raw";
   }
 
   log(level: logLvl, msg: string, ...args: any[]) {
@@ -35,23 +33,11 @@ export class Logger {
       payload[args[i]] = args[i + 1];
     }
 
-    if (this.logType === "pretty") {
-      console.log(
-        `${Object.keys(payload).map(
-          (k) => `${k}: ${JSON.stringify(payload[k], null, 2)}`
-        )}`
-      );
-    } else {
-      console.log(JSON.stringify(payload));
-    }
+    console.log(JSON.stringify(payload));
   }
 
   with(ctx: Context) {
-    return new Logger(
-      { ...this.context, ...ctx },
-      this.verbosity,
-      this.logType
-    );
+    return new Logger({ ...this.context, ...ctx }, this.verbosity);
   }
 
   debug(msg: string, ...args: unknown[]) {
@@ -79,7 +65,7 @@ export class Logger {
   }
 }
 
-export const defaultLogger = new Logger({}, logLvl.info, "pretty");
+export const defaultLogger = new Logger({}, logLvl.info);
 
 export function getLogLevel(lvl: string): logLvl {
   switch (lvl) {

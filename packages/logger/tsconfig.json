@@ -7,6 +7,6 @@
     "declarationMap": true,
     "rootDir": ".",
     "composite": true,
-    "outFile": "build/out.js"
+    "outDir": "./build"
   }
 }

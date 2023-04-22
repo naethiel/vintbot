@@ -1,6 +1,11 @@
 import sqlite3 from "sqlite3";
 import * as sql from "sqlite";
-import { Watcher, CreateWatcherRequest, Product } from "../types.js";
+import { Watcher, Product } from "../types.js";
+
+type CreateWatcherPayload = {
+  email: string;
+  query: string;
+};
 
 export class DBClient {
   readonly path: string;
@@ -11,12 +16,7 @@ export class DBClient {
     this.db = db;
   }
 
-  public static async init(): Promise<DBClient> {
-    const dbUrl = process.env.DB_URL;
-    if (!dbUrl) {
-      throw new Error("no DB_URL in ENV");
-    }
-
+  public static async init(dbUrl: string): Promise<DBClient> {
     const bootstrap = await sql.open({
       filename: dbUrl,
       driver: sqlite3.Database,
@@ -53,9 +53,7 @@ export class DBClient {
     ]);
   }
 
-  async createWatcher(
-    newWatcher: CreateWatcherRequest["watcher"]
-  ): Promise<Watcher> {
+  async createWatcher(newWatcher: CreateWatcherPayload): Promise<Watcher> {
     const now = new Date().toISOString();
 
     const result = await this.db.get<Watcher>(

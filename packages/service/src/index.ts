@@ -8,7 +8,13 @@ const isDryRun = process.env.MAIL_DRY_RUN === "true";
 
 async function main() {
   logger.info("starting vinted watcher bot");
-  const db = await DBClient.init();
+  const dbUrl = process.env.DB_URL;
+  if (!dbUrl) {
+    logger.error("no database url provided: env.DB_URL is undefined");
+    process.exit(1);
+  }
+
+  const db = await DBClient.init(dbUrl);
 
   try {
     logger.info("starting batch processor", "dry run", isDryRun);

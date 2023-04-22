@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "ts-node -r dotenv/config src/index.ts",
     "build": "tsc",
-    "start": "ts-node -r dotenv/config src/index.ts --swc"
+    "start": "ts-node --swc=true -r dotenv/config src/index.ts"
   },
   "dependencies": {
     "@fastify/cors": "^8.2.1",
