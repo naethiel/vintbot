@@ -2,14 +2,14 @@
   "private": true,
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "dev:web": "npm run dev -w @vintbot/web",
-    "dev:service": "npm run dev -w @vintbot/service",
+    "dev:web": "npm run dev -w @squirreled/web",
+    "dev:service": "npm run dev -w @squirreled/service",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
     "prettier": "^2.8.7"
   },
-  "name": "vintbot-mono",
+  "name": "squirreled",
   "packageManager": "npm@8.1.1",
   "workspaces": [
     "packages/*"

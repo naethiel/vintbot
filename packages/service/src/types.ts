@@ -1,1 +1,1 @@
-export * from "@vintbot/types";
+export * from "@squirreled/types";

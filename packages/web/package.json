@@ -1,5 +1,5 @@
 {
-  "name": "@vintbot/web",
+  "name": "@squirreled/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,7 +13,7 @@
     "@types/node": "18.15.11",
     "@types/react": "18.0.35",
     "@types/react-dom": "18.0.11",
-    "@vintbot/types": "*",
+    "@squirreled/types": "*",
     "firebase": "^9.20.0",
     "next": "13.3.0",
     "react": "18.2.0",

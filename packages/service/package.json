@@ -1,5 +1,5 @@
 {
-  "name": "@vintbot/service",
+  "name": "@squirreled/service",
   "version": "1.0.0",
   "private": true,
   "main": "./src/index.ts",
@@ -16,8 +16,8 @@
     "dotenv": "^16.0.3",
     "fastify": "^4.15.0",
     "fastify-type-provider-zod": "^1.1.9",
-    "@vintbot/logger": "*",
-    "@vintbot/types": "*",
+    "@squirreled/logger": "*",
+    "@squirreled/types": "*",
     "node-fetch": "^3.3.1",
     "sqlite": "^4.1.2",
     "sqlite3": "^5.1.6",
