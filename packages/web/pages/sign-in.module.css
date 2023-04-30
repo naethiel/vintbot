@@ -1,0 +1,7 @@
+.container {
+	grid-column-gap: 0;
+}
+
+.squirrel {
+	margin: var(--block-spacing-vertical) 0;
+}

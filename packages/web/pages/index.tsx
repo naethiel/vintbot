@@ -4,13 +4,15 @@ export default function Home() {
   return (
     <>
       <header>
-        <h1>VintBot</h1>
-        <h2>A watcher app for vinted search results</h2>
+        <hgroup>
+          <h1>Squirreled</h1>
+          <h2>A watcher app for Vinted search results</h2>
+          <h3>Get notified by e-mail when new products match your search !</h3>
+        </hgroup>
       </header>
       <section>
-        <h3>Get notified by e-mail when new products match your search !</h3>
-        <Link href="/login">
-          <button>Start</button>
+        <Link href="sign-in" role="button" className="primary">
+          Start
         </Link>
       </section>
     </>

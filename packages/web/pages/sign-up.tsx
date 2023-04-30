@@ -31,9 +31,9 @@ export default function SignUpForm() {
   }
 
   return (
-    <div>
+    <article>
+      <header>Sign up to be able to create Vinted watchers</header>
       <form onSubmit={handleSignUp}>
-        <h4>Sign Up</h4>
         <label>
           Email
           <input type="email" required />
@@ -44,9 +44,9 @@ export default function SignUpForm() {
         </label>
         <button type="submit">Sign Up</button>
       </form>
-      <p>
-        Already have an account? <Link href="./login">Log in!</Link>
-      </p>
-    </div>
+      <footer>
+        Already have an account? <Link href="sign-in">Log in!</Link>
+      </footer>
+    </article>
   );
 }

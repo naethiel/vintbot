@@ -11,7 +11,7 @@ export async function fetcher<T = any>(
     init.body = JSON.stringify(payload);
   }
   return fetch(
-    `${process.env.NEXT_PUBLIC_VINTBOT_API_BASE_URL}/${path}`,
+    `${process.env.NEXT_PUBLIC_SQUIRRELED_API_BASE_URL}/${path}`,
     init
   ).then((res) => res.json());
 }
