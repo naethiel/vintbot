@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "~/auth/firebase-config";
 import Link from "next/link";
-import Image from "next/image";
 import squirrel from "~/assets/squirrel01.jpg";
 import styles from "./sign-in.module.css";
 
@@ -47,9 +46,10 @@ export default function Signin() {
           Don't have an account yet? <Link href="./sign-up">Sign up!</Link>
         </footer>
       </article>
-      <div className={styles.squirrel}>
-        <Image src={squirrel} alt="squirrel illustration" placeholder="blur" />
-      </div>
+      <div
+        className={styles.squirrel}
+        style={{ backgroundImage: `url(${squirrel.src})` }}
+      ></div>
     </div>
   );
 }

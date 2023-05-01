@@ -4,4 +4,6 @@
 
 .squirrel {
 	margin: var(--block-spacing-vertical) 0;
+	background-position: center;
+	background-size: cover;
 }
