@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useUserData } from "~/auth/auth-provider";
+import { Watchers } from "~/components/watchers";
 
 export default function Dashboard() {
   const { currentUser, isLoading } = useUserData();
@@ -8,7 +9,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!currentUser && !isLoading) {
-      router.push("login");
+      router.push("/");
     }
   }, [router, currentUser, isLoading]);
 
@@ -17,8 +18,12 @@ export default function Dashboard() {
   }
 
   return (
-    <div>
-      Logged in successfully: {JSON.stringify(currentUser.toJSON(), null, 2)}
-    </div>
+    <>
+      <h1>Logged in successfully</h1>
+      <pre>
+        <code>{JSON.stringify(currentUser.toJSON(), null, 2)}</code>
+      </pre>
+      <Watchers />
+    </>
   );
 }

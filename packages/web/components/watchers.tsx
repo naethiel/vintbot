@@ -9,14 +9,11 @@ export function Watchers() {
   );
 
   if (!watchers.data) {
-    return (
-      <tr>
-        <td>loading...</td>
-      </tr>
-    );
+    return <div aria-busy>Loading...</div>;
   }
+
   return (
-    <>
+    <table>
       {watchers.data.data.watchers.map((w) => {
         const date = w.crawled_at
           ? Date.parse(w.crawled_at).toLocaleString()
@@ -30,6 +27,6 @@ export function Watchers() {
           </tr>
         );
       })}
-    </>
+    </table>
   );
 }

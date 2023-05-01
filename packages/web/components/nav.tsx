@@ -29,8 +29,14 @@ export function Nav() {
         <li>
           {currentUser && (
             <>
-              Logged in as {currentUser.email}{" "}
-              <button onClick={handleLogout}>Log out</button>
+              <Link
+                href="/"
+                onClick={handleLogout}
+                role="button"
+                className="secondary"
+              >
+                Log out
+              </Link>
             </>
           )}
           {currentUser === null && (

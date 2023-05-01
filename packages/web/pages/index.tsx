@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { useUserData } from "~/auth/auth-provider";
 
 export default function Home() {
+  const { currentUser } = useUserData();
+
   return (
     <>
       <header>
@@ -11,7 +14,11 @@ export default function Home() {
         </hgroup>
       </header>
       <section>
-        <Link href="sign-in" role="button" className="primary">
+        <Link
+          href={currentUser ? "dashboard" : "sign-in"}
+          role="button"
+          className="primary"
+        >
           Start
         </Link>
       </section>
