@@ -1,12 +1,14 @@
 {
-    "name": "@squirreled/logger",
-    "version": "0.0.0",
-    "main": "./index.ts",
-    "types": "./index.ts",
-    "type": "module",
-    "license": "MIT",
-    "scripts": {},
-    "devDependencies": {
-        "typescript": "^5.0.4"
-    }
+  "name": "@squirreled/logger",
+  "version": "0.0.0",
+  "main": "./build/index.js",
+  "types": "./src/index.ts",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --build"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  }
 }

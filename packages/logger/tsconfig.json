@@ -1,12 +1,18 @@
 {
-  "include": ["."],
-  "exclude": ["dist", "build", "node_modules"],
+  "exclude": ["build", "node_modules"],
   "references": [],
   "compilerOptions": {
+    "target": "es2022",
+    "module": "Node16",
+    "moduleResolution": "node16",
     "declaration": true,
-    "declarationMap": true,
-    "rootDir": ".",
-    "composite": true,
-    "outDir": "./build"
+    "strict": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": "./src",
+    "outDir": "./build",
+    "composite": true
   }
 }

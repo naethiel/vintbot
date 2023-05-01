@@ -1,4 +1,4 @@
-import { Watcher } from "../types.js";
+import { Watcher } from "@squirreled/types";
 import { searchVinted } from "./vinted-api-client.js";
 import { DBClient } from "../database/database.js";
 import { mailService } from "./mail-service.js";

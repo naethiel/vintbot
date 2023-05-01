@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { GetWatchersResponse } from "~/../types/types";
+import { GetWatchersResponse } from "@squirreled/types";
 import { fetcher } from "~/fetcher";
 
 export function Watchers() {

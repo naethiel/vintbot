@@ -1,11 +1,13 @@
 {
   "name": "@squirreled/types",
   "version": "0.0.0",
-  "main": "./types.ts",
-  "types": "./types.ts",
+  "main": "./build/types.js",
+  "types": "./src/types.ts",
   "type": "module",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build": "tsc --build"
+  },
   "devDependencies": {
     "typescript": "^5.0.4"
   },

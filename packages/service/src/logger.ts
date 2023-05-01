@@ -1,5 +1,6 @@
-import { defaultLogger, getLogLevel } from "@squirreled/logger";
+import { Logger, getLogLevel, logLvl } from "@squirreled/logger";
 
+const defaultLogger = new Logger({}, logLvl.info);
 defaultLogger.context = { app: "vinted_watcher" };
 defaultLogger.verbosity = getLogLevel(process.env.LOG_LEVEL || "");
 

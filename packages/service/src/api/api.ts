@@ -14,7 +14,7 @@ import {
   CreateWatcherResponse,
   zUpdateWatcherRequest,
   zUpdateWatcherResponse,
-} from "../types.js";
+} from "@squirreled/types";
 
 import { logger } from "../logger.js";
 import { DBClient } from "../database/database.js";

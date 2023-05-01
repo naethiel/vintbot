@@ -1,6 +1,6 @@
 import sqlite3 from "sqlite3";
 import * as sql from "sqlite";
-import { Watcher, Product } from "../types.js";
+import { Watcher, Product } from "@squirreled/types";
 
 type CreateWatcherPayload = {
   email: string;
