@@ -13,24 +13,24 @@
     "@fastify/cors": "^8.2.1",
     "@fastify/sensible": "^5.2.0",
     "@sendinblue/client": "^3.3.1",
+    "@squirreled/logger": "^0.0.0",
     "dotenv": "^16.0.3",
-    "fastify": "^4.15.0",
+    "fastify": "^4.17.0",
     "fastify-type-provider-zod": "^1.1.9",
-    "@squirreled/logger": "*",
-    "@squirreled/types": "*",
     "node-fetch": "^3.3.1",
     "sqlite": "^4.1.2",
     "sqlite3": "^5.1.6",
     "zod": "^3.21.4",
-    "zod-to-json-schema": "^3.20.4"
+    "zod-to-json-schema": "^3.21.0"
   },
   "devDependencies": {
-    "@swc/core": "^1.3.50",
-    "@swc/helpers": "^0.5.0",
-    "@types/node": "^18.15.11",
+    "@squirreled/types": "^0.0.0",
+    "@swc/core": "^1.3.56",
+    "@swc/helpers": "^0.5.1",
+    "@types/node": "^18.16.3",
     "regenerator-runtime": "^0.13.11",
     "ts-node": "^10.9.1",
-    "tsconfig": "*",
+    "tsconfig": "^7.0.0",
     "tslib": "^2.5.0",
     "typescript": "^5.0.4"
   }
