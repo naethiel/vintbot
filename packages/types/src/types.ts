@@ -4,7 +4,7 @@ export const zWatcher = z.object({
   crawled_at: z.string().datetime().optional(),
   email: z.string().email(),
   query: z.string(),
-  id: z.number(),
+  id: z.union([z.number(), z.bigint()]),
 });
 export type Watcher = z.infer<typeof zWatcher>;
 
@@ -32,7 +32,7 @@ export const zUpdateWatcherResponse = zCreateWatcherResponse;
 export type UpdateWatcherResponse = z.infer<typeof zUpdateWatcherResponse>;
 
 export const zProduct = z.object({
-  id: z.number(),
+  id: z.union([z.number(), z.bigint()]),
   vinted_id: z.number(),
   watcher_id: z.number(),
 });

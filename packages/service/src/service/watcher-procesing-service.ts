@@ -8,7 +8,7 @@ const SECOND = 1000;
 const DEFAULT_BATCH_FREQ = 5 * SECOND;
 const DEFAULT_BATCH_SIZE = 10;
 
-export function runBatchProcessor(db: DBClient, dryRun: boolean): void {
+export function runBatchProcessor(db: DBClient): void {
   const batchSize = Number(process.env.BATCH_SIZE ?? DEFAULT_BATCH_SIZE);
   const frequency = Number(process.env.BATCH_FREQUENCY ?? DEFAULT_BATCH_FREQ);
 
@@ -19,40 +19,30 @@ export function runBatchProcessor(db: DBClient, dryRun: boolean): void {
     }
 
     isProcessing = true;
-    processBatch(db, batchSize, dryRun).finally(() => {
+    processBatch(db, batchSize).finally(() => {
       isProcessing = false;
     });
   }, frequency);
 }
 
-async function processBatch(
-  db: DBClient,
-  batchSize: number,
-  dryRun: boolean
-): Promise<void> {
+async function processBatch(db: DBClient, batchSize: number): Promise<void> {
   try {
-    const watchers = await db.getWatchers(batchSize);
+    const watchers = db.getWatchers(batchSize);
     logger.debug(`processing ${watchers.length} watchers`);
 
-    await Promise.allSettled(
-      watchers.map((w) => processWatcher(db, w, dryRun))
-    );
+    await Promise.allSettled(watchers.map((w) => processWatcher(db, w)));
   } catch (err) {
     logger.error("failed to process watchers", "error", err);
   }
 }
 
-async function processWatcher(
-  db: DBClient,
-  watcher: Watcher,
-  dryRun: boolean
-): Promise<void> {
+async function processWatcher(db: DBClient, watcher: Watcher): Promise<void> {
   logger.debug("processing watcher", "watcher", watcher.id);
   logger.debug("searching vinted with watcher query");
 
   const results = await searchVinted(watcher.query);
 
-  const knownProducts = await db.getProducts(watcher.id);
+  const knownProducts = db.getProducts({ watcherID: watcher.id });
   // build a list of all known ids
   const knownIDs = new Set(knownProducts.map((k) => k.vinted_id));
 
@@ -70,22 +60,18 @@ async function processWatcher(
   }
 
   logger.debug("new items found, sending email notification");
-  mailService.send(
-    newItems,
-    [
-      {
-        email: watcher.email,
-      },
-    ],
-    dryRun
-  );
+  mailService.send(newItems, [
+    {
+      email: watcher.email,
+    },
+  ]);
 
   logger.debug(
     `adding ${newItems.length} new products to known database for current watcher`
   );
 
   // write new items to s.db so that they're "known" now
-  await db.createProducts(
+  db.createProducts(
     newItems.map((item) => {
       return {
         vinted_id: item.id,
@@ -95,18 +81,19 @@ async function processWatcher(
   );
 
   // remove previously seen items that no longer appear in this search
-  const obsoleteProducts = knownProducts.filter((known) => {
-    const isInResults = results.find((result) => result.id === known.vinted_id);
-    return isInResults;
-  });
+  const obsoleteProductIDs = knownProducts
+    .filter((known) => {
+      return results.find((result) => result.id === known.vinted_id);
+    })
+    .map((p) => p.id);
 
   try {
     logger.debug(
       "delete obsolete known products for watcher",
       "removed",
-      obsoleteProducts
+      obsoleteProductIDs
     );
-    await db.deleteProducts(obsoleteProducts);
+    db.deleteProducts(obsoleteProductIDs);
   } catch (err) {
     logger.error("failed to delete obsolete products", "error", err);
   }

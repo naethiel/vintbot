@@ -1,114 +1,151 @@
-import sqlite3 from "sqlite3";
-import * as sql from "sqlite";
-import { Watcher, Product } from "@squirreled/types";
+import Database from "better-sqlite3";
+import { z } from "zod";
+
+const zDbId = z.union([z.bigint(), z.number()]);
+type DbId = z.infer<typeof zDbId>;
+const zDbWatcher = z.object({
+  id: zDbId,
+  query: z.string(),
+  email: z.string(),
+  crawled_at: z.string().datetime().optional(),
+});
+type DbWatcher = z.infer<typeof zDbWatcher>;
+
+const zDbProduct = z.object({
+  id: zDbId,
+  vinted_id: z.number(),
+  watcher_id: z.number(),
+});
+type DbProduct = z.infer<typeof zDbProduct>;
 
 type CreateWatcherPayload = {
   email: string;
   query: string;
 };
 
+type getProductsFilter = {
+  watcherID?: DbId;
+  IDs?: DbId[];
+};
+
 export class DBClient {
   readonly path: string;
-  readonly db: sql.Database;
+  readonly db: Database.Database;
 
-  private constructor(path: string, db: sql.Database) {
+  constructor(path: string) {
     this.path = path;
-    this.db = db;
+    this.db = new Database(path);
+    this.db.pragma("journal_mode = WAL");
   }
 
-  public static async init(dbUrl: string): Promise<DBClient> {
-    const bootstrap = await sql.open({
-      filename: dbUrl,
-      driver: sqlite3.Database,
-    });
-
-    return new DBClient(dbUrl, bootstrap);
-  }
-
-  async getAllWatchers(): Promise<Watcher[]> {
-    return this.db.all<Watcher[]>(
+  getAllWatchers(): DbWatcher[] {
+    const stmt = this.db.prepare(
       "SELECT id, query, email FROM watchers ORDER BY id"
     );
+    const raw = stmt.all();
+    const watchers = z.array(zDbWatcher);
+
+    return watchers.parse(raw);
   }
 
-  async getWatchers(size: number): Promise<Watcher[]> {
-    return this.db.all<Watcher[]>(
-      "SELECT id, query, email FROM watchers ORDER BY crawled_at ASC LIMIT ?",
-      [size]
+  getWatchers(size: number): DbWatcher[] {
+    const stmt = this.db.prepare<number>(
+      "SELECT id, query, email FROM watchers ORDER BY crawled_at ASC LIMIT ?"
     );
+
+    const raw = stmt.all(size);
+    const results = z.array(zDbWatcher);
+
+    return results.parse(raw);
   }
 
-  async getWatcher(id: number): Promise<Watcher | undefined> {
-    return this.db.get<Watcher>(
-      "SELECT id, query, email, crawled_at FROM watchers WHERE id = ?",
-      [id]
+  getWatcher(id: DbId): DbWatcher {
+    const stmt = this.db.prepare<[DbId]>(
+      "SELECT id, query, email, crawled_at FROM watchers WHERE id = ?"
     );
+    const raw = stmt.get(id);
+    return zDbWatcher.parse(raw);
   }
 
-  async updateWatcher(w: Watcher): Promise<void> {
-    await this.db.run("UPDATE watchers SET email = ?, query = ? WHERE id = ?", [
-      w.email,
-      w.query,
-      w.id,
-    ]);
+  updateWatcher(w: DbWatcher): Database.RunResult {
+    const stmt = this.db.prepare<[string, string, DbId]>(
+      "UPDATE watchers SET email = ?, query = ? WHERE id = ?"
+    );
+
+    return stmt.run(w.email, w.query, w.id);
   }
 
-  async createWatcher(newWatcher: CreateWatcherPayload): Promise<Watcher> {
+  createWatcher(payload: CreateWatcherPayload): DbWatcher {
     const now = new Date().toISOString();
 
-    const result = await this.db.get<Watcher>(
-      "INSERT INTO watchers (query, email, crawled_at) VALUES (?, ?, ?) RETURNING id, query, email, crawled_at",
-      [newWatcher.query, newWatcher.email, now]
+    const stmt = this.db.prepare<[string, string, string]>(
+      "INSERT INTO watchers (query, email, crawled_at) VALUES (?, ?, ?)"
     );
+    const result = stmt.run(payload.query, payload.email, now);
 
-    if (!result) {
-      throw new Error("could not read created watcher from DB");
+    return this.getWatcher(result.lastInsertRowid);
+  }
+
+  deleteWatcher(id: DbId) {
+    const stmt = this.db.prepare<[DbId]>("DELETE FROM watchers WHERE id = ?");
+
+    stmt.run(id);
+  }
+
+  getProducts(filter: getProductsFilter): DbProduct[] {
+    let query = "SELECT id, vinted_id, watcher_id FROM products";
+
+    let whereClauses: string[] = [];
+    if (filter.IDs) {
+      whereClauses.push("id IN (@ids)");
+    }
+    if (filter.watcherID) {
+      whereClauses.push("watcher_id = @watcher_id");
     }
 
-    return result;
+    if (whereClauses.length > 0) {
+      query += ` WHERE ${whereClauses.join(" AND ")}`;
+    }
+
+    const stmt = this.db.prepare<getProductsFilter>(query);
+
+    const raw = stmt.all(filter);
+    const products = z.array(zDbProduct);
+    return products.parse(raw);
   }
 
-  async getProducts(watcherID: number): Promise<Product[]> {
-    return this.db.all<Product[]>(
-      `
-    SELECT id, vinted_id, watcher_id
-      FROM products
-      WHERE watcher_id = ?
-      `,
-      [watcherID]
-    );
-  }
+  createProducts(
+    payload: { vinted_id: number; watcher_id: DbId }[]
+  ): DbProduct[] {
+    const stmt = this.db.prepare<(typeof payload)[number]>(`
+        INSERT INTO products (vinted_id, watcher_id)
+        VALUES (@vinted_id, @watcher_id)
+    `);
 
-  async createProducts(
-    products: { vinted_id: number; watcher_id: number }[]
-  ): Promise<Product[]> {
-    const stmt = await this.db.prepare(
-      `
-      INSERT INTO products (vinted_id, watcher_id)
-      VALUES (?, ?)
-      `
-    );
-
-    products.forEach((product) => {
-      stmt.run([product.vinted_id, product.watcher_id]);
+    let createdIds: DbId[] = [];
+    const insertMany = this.db.transaction((products: typeof payload) => {
+      for (const product of products) {
+        const result = stmt.run(product);
+        createdIds.push(result.lastInsertRowid);
+      }
     });
 
-    stmt.finalize();
+    insertMany(payload);
 
-    const items = await this.db.all<Product[]>(
-      `
-    SELECT id, vinted_id, watcher_id FROM products
-    WHERE vinted_id IN (?)
-    `,
-      [products.map((p) => p.vinted_id)]
-    );
-
-    return items;
+    return this.getProducts({ IDs: createdIds });
   }
 
-  async deleteProducts(products: Product[]): Promise<void> {
-    await this.db.exec(`DELETE FROM products WHERE id IN (?)`, [
-      products.map((p) => p.id),
-    ]);
+  deleteProducts(productIds: DbId[]) {
+    const stmt = this.db.prepare<[DbId]>(
+      "DELETE FROM products WHERE id IN (?)"
+    );
+
+    const deleteMany = this.db.transaction((ids) => {
+      ids.forEach((id: DbId) => {
+        stmt.run(id);
+      });
+    });
+
+    deleteMany(productIds);
   }
 }

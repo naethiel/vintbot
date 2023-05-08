@@ -1,10 +1,8 @@
 import process from "node:process";
 import { runBatchProcessor } from "./service/watcher-procesing-service.js";
-import { startAPI } from "./api/api.js";
 import { logger } from "./logger.js";
 import { DBClient } from "./database/database.js";
-
-const isDryRun = process.env.MAIL_DRY_RUN === "true";
+import { Api } from "./api/express-api.js";
 
 async function main() {
   logger.info("starting vinted watcher bot");
@@ -14,21 +12,21 @@ async function main() {
     process.exit(1);
   }
 
-  const db = await DBClient.init(dbUrl);
+  const db = new DBClient(dbUrl);
 
   try {
-    logger.info("starting batch processor", "dry run", isDryRun);
-    runBatchProcessor(db, isDryRun);
+    logger.info("starting batch processor");
+    runBatchProcessor(db);
   } catch (err) {
     logger.error("starting batch processor", err);
     process.exit(1);
   }
 
   try {
-    logger.info("starting REST server");
-    await startAPI(db);
+    Api.boot(db);
+    logger.info("starting API");
   } catch (err) {
-    logger.error("failed to start REST server", err);
+    logger.error("failed to start API", err);
     process.exit(1);
   }
 }
